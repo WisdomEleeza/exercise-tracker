@@ -2,21 +2,34 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 require('dotenv').config()
-
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
 const connnectDB = async () => {
   try {
-    await mongoose.connect(process.env.DB_URL,{
+    await mongoose.connect(process.env.DB_URL, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-    })
-    console.log("Mongodb connected");
+    });
+    console.log("MongoDB connected");
   } catch (error) {
-    console.log("Failed to connect");
+    console.error("Failed to connect to MongoDB:", error);
   }
-}
-connnectDB()
+};
+
+connnectDB();
+
+
+const UserSchema = new Schema({
+  username: {
+    type: String,
+    required: true,
+  },
+});
+
+const User = mongoose.model('User', UserSchema);
+
+module.exports = User;
 
 app.use(cors())
 app.use(express.static('public'))
