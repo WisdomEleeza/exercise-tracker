@@ -47,6 +47,11 @@ app.post('/api/users', async (req, res) => {
   }
 })
 
+app.get('/api/users', async (req, res) => {
+  const fetchUsers = await User.find()
+  res.status(200).json({ fetchUsers })
+})
+
 /**
  * You can POST to /api/users with form data username to create a new user.
  * The returned response from POST /api/users with form data username will be an object with username and _id properties.
