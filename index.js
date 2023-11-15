@@ -16,7 +16,6 @@ const connnectDB = async () => {
     console.log("Failed to connect");
   }
 }
-
 connnectDB()
 
 app.use(cors())
@@ -25,7 +24,13 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')
 });
 
-
+app.post('/api/users', async (req, res) => {
+  try {
+    const { username } = req.body
+  } catch (error) {
+    
+  }
+})
 
 /**
  * You can POST to /api/users with form data username to create a new user.
