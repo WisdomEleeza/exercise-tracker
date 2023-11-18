@@ -93,17 +93,18 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
       userId: _id,
       description,
       duration,
-      date,
+      date: date ? new Date(date) : new Date,
     });
 
-    // Update the user with the new exercise
-    user.exercises.push(exercise);
     await user.save();
 
-    // Fetch the user again to include the exercises
-    const updatedUser = await User.findById(_id).populate('exercises');
-
-    res.status(201).json(updatedUser);
+    res.status(201).json({
+      userId: user_id,
+      username: exercise.username,
+      description: exercise.description,
+      duration: exercise.duration,
+      date: new Date(exercise.date).toDateString()
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
