@@ -31,6 +31,28 @@ const User = mongoose.model('User', UserSchema);
 
 module.exports = User;
 
+const ExerciseSchema = new Schema({
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
+  duration: {
+    type: Number,
+    required: true,
+  },
+  date: {
+    type: Date,
+    default: Date.now,
+  },
+});
+const Exercise = mongoose.model('Exercise', ExerciseSchema);
+module.exports = Exercise
+
 app.use(cors())
 app.use(express.static('public'))
 app.get('/', (req, res) => {
@@ -55,10 +77,10 @@ app.get('/api/users', async (req, res) => {
 app.post('/api/users/:_id/exercises', async (req, res) => {
  try {
    const { _id } = req.params
-  const { description, durationn, date } = req.body
+  const { description, duration, date } = req.body
   const exercises = User.create({
     description,
-    durationn,
+    duration,
     date
   })
   res.status(201).json(exercises)
@@ -67,15 +89,7 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
  }
 })
 
-/**
- * You can POST to /api/users with form data username to create a new user.
- * The returned response from POST /api/users with form data username will be an object with username and _id properties.
- * You can make a GET request to /api/users to get a list of all users.
- * The GET request to /api/users returns an array.
- * Each element in the array returned from GET /api/users is an object literal containing a user's username and _id.
- * You can POST to /api/users/:_id/exercises with form data description, duration, and optionally date. 
-    If no date is supplied, the current date will be used.
- */
+
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)
