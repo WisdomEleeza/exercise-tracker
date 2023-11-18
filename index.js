@@ -47,13 +47,14 @@ const ExerciseSchema = new Schema({
   },
   date: {
     type: Date,
-    default: Date.now,
+    default: Date.now(),
   },
 });
 const Exercise = mongoose.model('Exercise', ExerciseSchema);
 module.exports = Exercise
 
 app.use(cors())
+app.use(express.urlencoded({extended: true}))
 app.use(express.static('public'))
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')
