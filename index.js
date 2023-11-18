@@ -75,19 +75,75 @@ app.get('/api/users', async (req, res) => {
 })
 
 app.post('/api/users/:_id/exercises', async (req, res) => {
- try {
-   const { _id } = req.params
-  const { description, duration, date } = req.body
-  const exercises = User.create({
-    description,
-    duration,
-    date
-  })
-  res.status(201).json(exercises)
- } catch (error) {
-  res.status(500).json({ error })
- }
-})
+  try {
+    const { _id } = req.params;
+    const { description, duration, date } = req.body;
+
+    // Check if the user exists
+    const user = await User.findById(_id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const exercise = await Exercise.create({
+      userId: _id,
+      description,
+      duration,
+      date,
+    });
+
+    res.status(201).json(exercise);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Route to get exercise log
+app.get('/api/users/:_id/logs', async (req, res) => {
+  try {
+    const { _id } = req.params;
+    const { from, to, limit } = req.query;
+
+    // Check if the user exists
+    const user = await User.findById(_id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Query parameters for date range
+    const query = { userId: _id };
+    if (from && to) {
+      query.date = { $gte: new Date(from), $lte: new Date(to) };
+    }
+
+    // Fetch exercise logs with optional limit
+    let logs;
+    if (limit) {
+      logs = await Exercise.find(query).limit(parseInt(limit));
+    } else {
+      logs = await Exercise.find(query);
+    }
+
+    // Count of exercises
+    const count = logs.length;
+
+    // Prepare response object
+    const response = {
+      _id: user._id,
+      username: user.username,
+      count,
+      log: logs.map(log => ({
+        description: log.description,
+        duration: log.duration,
+        date: log.date.toDateString(),
+      })),
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 
 
