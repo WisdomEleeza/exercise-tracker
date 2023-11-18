@@ -100,8 +100,6 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
       date: date ? new Date(date) : new Date(),
     });
 
-    await exercise.save();
-
     // Update the user with the new exercise
     user.exercises.push(exercise);
     await user.save();
@@ -114,6 +112,7 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
 
 
 
