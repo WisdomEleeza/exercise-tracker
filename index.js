@@ -71,7 +71,7 @@ app.post('/api/users', async (req, res) => {
 
 app.get('/api/users', async (req, res) => {
   const fetchUsers = await User.find()
-  res.status(200).json({ fetchUsers })
+  res.status(200).json( fetchUsers )
 })
 
 app.post('/api/users/:_id/exercises', async (req, res) => {
