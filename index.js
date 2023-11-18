@@ -97,22 +97,24 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
       userId: _id,
       description,
       duration,
-      date: date ? new Date(date) : new Date,
+      date: date ? new Date(date) : new Date(),
     });
 
     await exercise.save();
 
-    res.status(201).json({
-      userId: user_id,
-      username: exercise.username,
-      description: exercise.description,
-      duration: exercise.duration,
-      date: new Date(exercise.date).toDateString()
-    });
+    // Update the user with the new exercise
+    user.exercises.push(exercise);
+    await user.save();
+
+    // Fetch the user again to include the exercises
+    const updatedUser = await User.findById(_id).populate('exercises');
+
+    res.status(201).json(updatedUser);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
+
 
 
 // Route to get exercise log
@@ -126,6 +128,9 @@ app.get('/api/users/:_id/logs', async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
+
+    // Fetch user exercises
+    const userExercises = await Exercise.find({ userId: _id });
 
     // Query parameters for date range
     const query = { userId: _id };
@@ -161,6 +166,7 @@ app.get('/api/users/:_id/logs', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
 
 
 
