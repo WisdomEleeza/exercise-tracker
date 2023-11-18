@@ -73,9 +73,13 @@ app.post('/api/users', async (req, res) => {
   }
 })
 
+// get all users
 app.get('/api/users', async (req, res) => {
-  const fetchUsers = await User.find({}, '_id username')
-  res.status(200).json( fetchUsers )
+  const users = await User.find({}).select('_id username')
+  if(!users) res.json({ messsage: 'No user found'})
+  else {
+    res.json(users)
+  }
 })
 
 app.post('/api/users/:_id/exercises', async (req, res) => {
@@ -96,7 +100,7 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
       date: date ? new Date(date) : new Date,
     });
 
-    await user.save();
+    await exercise.save();
 
     res.status(201).json({
       userId: user_id,
