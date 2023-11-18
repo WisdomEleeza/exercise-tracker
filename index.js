@@ -63,14 +63,17 @@ app.post('/api/users', async (req, res) => {
   try {
     const { username } = req.body
     const user = await User.create({ username })
-    res.status(201).json({ user })
+    res.status(201).json({
+      username: user.username,
+      _id: user._id
+    })
   } catch (error) {
     res.status(500).json({ message: "Internal Server Error" });
   }
 })
 
 app.get('/api/users', async (req, res) => {
-  const fetchUsers = await User.find()
+  const fetchUsers = await User.find({}, '_id username')
   res.status(200).json( fetchUsers )
 })
 
@@ -92,7 +95,17 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
       date,
     });
 
-    res.status(201).json(exercise);
+    // Update the user with the new exercise
+    user.exercises.push(exercise);
+    await user.save();
+
+    res.status(201).json({
+      _id: user._id,
+      username: user.username,
+      description: exercise.description,
+      duration: exercise.duration,
+      date: exercise.date.toDateString(),
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
