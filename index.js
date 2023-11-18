@@ -100,17 +100,15 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
     user.exercises.push(exercise);
     await user.save();
 
-    res.status(201).json({
-      _id: user._id,
-      username: user.username,
-      description: exercise.description,
-      duration: exercise.duration,
-      date: exercise.date.toDateString(),
-    });
+    // Fetch the user again to include the exercises
+    const updatedUser = await User.findById(_id).populate('exercises');
+
+    res.status(201).json(updatedUser);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
+
 
 // Route to get exercise log
 app.get('/api/users/:_id/logs', async (req, res) => {
